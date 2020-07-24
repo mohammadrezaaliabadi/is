@@ -1,1 +1,3 @@
-rootProject.name = 'demo'
+rootProject.name = 'web'
+include "db"
+include "web"
