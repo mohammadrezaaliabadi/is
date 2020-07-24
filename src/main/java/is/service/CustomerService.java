@@ -1,22 +1,15 @@
 package is.service;
 
-import is.config.Me;
 import is.db.model.Customer;
-import is.db.repository.CustomerRepository;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@NoArgsConstructor
-@Component
-public class CustomerService {
-    @Autowired
-    private CustomerRepository repository;
-    @Autowired
-    private Me me;
-    public String ge(){
-        return me.getMessage();
-    }
+import java.util.List;
+import java.util.function.Predicate;
+public interface CustomerService {
+    Customer findById(Integer id);
+    void save(Customer t);
+    void delete(Integer id);
+    void update(Integer id,Customer t);
+    List<Customer> find(Predicate<Customer> predicate);
 }
