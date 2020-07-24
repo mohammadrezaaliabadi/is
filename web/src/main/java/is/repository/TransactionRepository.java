@@ -1,7 +1,7 @@
 package is.repository;
 
 
-import is.db.model.Transaction;
+import is.domain.Transaction;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -9,11 +9,11 @@ import java.util.function.Predicate;
 public interface TransactionRepository {
     Transaction findById(Integer id);
 
-    void save(Transaction t);
+    Transaction save(Transaction t);
 
     void delete(Integer id);
 
-    void update(Integer id, Transaction t);
+    Transaction update(Integer id, Transaction t);
 
     List<Transaction> find(Predicate<Transaction> predicate);
 }

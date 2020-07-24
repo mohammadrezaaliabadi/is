@@ -1,7 +1,10 @@
 package is.bootstrap;
 
-import is.db.model.Customer;
-import is.service.CustomerService;
+import is.repository.AccountRepository;
+import is.repository.CardRepository;
+import is.repository.CustomerRepository;
+import is.repository.TransactionRepository;
+import is.domain.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,10 +14,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppLoader implements CommandLineRunner {
     @Autowired
-    CustomerService customerService;
-
+    private AccountRepository accountRepository;
     @Autowired
-    private ApplicationContext context;
+    private CardRepository cardRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -23,9 +31,6 @@ public class AppLoader implements CommandLineRunner {
     }
 
     public void initCustomer() {
-        customerService.save(Customer.builder().id(1).firstName("ali").lastName("ahmad").build());
-        Customer byId = customerService.findById(1);
-        System.out.println(byId);
-        SpringApplication.exit(context,()->0);
+
     }
 }

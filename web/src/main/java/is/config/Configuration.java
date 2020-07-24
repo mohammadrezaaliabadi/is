@@ -3,6 +3,7 @@ package is.config;
 import is.db.meta.MetaDB;
 import is.repository.*;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
@@ -18,7 +19,7 @@ public class Configuration {
     @Bean
     public MetaDB metaDB() throws IOException {
         MetaDB metaDB = new MetaDB(path, "bank");
-        metaDB.loadTableInJavaClass("is.db.model");
+        metaDB.loadTableInJavaClass("is.domain");
         metaDB.writeMetaDb();
         return metaDB;
     }
@@ -43,9 +44,9 @@ public class Configuration {
         return new CardRepositoryImpl(path.resolve("bank/card"), metaDB.getDb().getTables().get("card"));
     }
 
-    @EventListener(classes = { ContextStartedEvent.class, ContextStoppedEvent.class })
-    public void handleMultipleEvents() {
-        System.out.println("Multi-event listener invoked");
-    }
+//    @EventListener(classes = {ContextClosedEvent.class, ContextStoppedEvent.class })
+//    public void handleCloseAndStopContextEvents() {
+//        System.out.println("Multi-event listener invoked");
+//    }
 
 }

@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import is.db.manager.EntityManager;
 import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
-import is.db.model.Customer;
-import is.db.model.Transaction;
 import is.db.rw.bytes.SeekByteRW;
+import is.domain.Transaction;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -33,12 +32,8 @@ public class TransactionRepositoryImpl implements TransactionRepository, Closeab
     }
 
     @Override
-    public void save(Transaction t) {
-        try {
-            entityManager.save(t);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public Transaction save(Transaction t) {
+        return entityManager.save(t);
     }
 
     @Override
@@ -47,8 +42,8 @@ public class TransactionRepositoryImpl implements TransactionRepository, Closeab
     }
 
     @Override
-    public void update(Integer id, Transaction t) {
-        entityManager.update(id, t);
+    public Transaction update(Integer id, Transaction t) {
+        return entityManager.update(id, t);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package is.repository;
 
 
-import is.db.model.Card;
+import is.domain.Card;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -9,11 +9,11 @@ import java.util.function.Predicate;
 public interface CardRepository {
     Card findById(Integer id);
 
-    void save(Card t);
+    Card save(Card t);
 
     void delete(Integer id);
 
-    void update(Integer id, Card t);
+    Card update(Integer id, Card t);
 
     List<Card> find(Predicate<Card> predicate);
 }

@@ -1,4 +1,4 @@
-package is.db.model;
+package is.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

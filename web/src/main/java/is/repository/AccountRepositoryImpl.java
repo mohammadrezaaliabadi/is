@@ -5,10 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import is.db.manager.EntityManager;
 import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
-import is.db.model.Account;
 import is.db.rw.bytes.SeekByteRW;
+import is.domain.Account;
 
-import javax.annotation.PreDestroy;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -34,12 +33,8 @@ public class AccountRepositoryImpl implements AccountRepository ,Closeable{
     }
 
     @Override
-    public void save(Account t) {
-        try {
-            entityManager.save(t);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public Account save(Account t) {
+        return entityManager.save(t);
     }
 
     @Override
@@ -48,14 +43,13 @@ public class AccountRepositoryImpl implements AccountRepository ,Closeable{
     }
 
     @Override
-    public void update(Integer id, Account t) {
-        entityManager.update(id, t);
+    public Account update(Integer id, Account t) {
+        return entityManager.update(id, t);
     }
 
     @Override
     public List<Account> find(Predicate<Account> predicate) {
-        //todo impl
-        return null;
+        return entityManager.find(predicate);
     }
 
 

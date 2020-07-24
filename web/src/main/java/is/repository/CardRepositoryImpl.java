@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import is.db.manager.EntityManager;
 import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
-import is.db.model.Card;
 import is.db.rw.bytes.SeekByteRW;
+import is.domain.Card;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,12 +32,8 @@ public class CardRepositoryImpl implements CardRepository, Closeable {
     }
 
     @Override
-    public void save(Card t) {
-        try {
-            entityManager.save(t);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public Card save(Card t) {
+        return entityManager.save(t);
     }
 
     @Override
@@ -46,8 +42,8 @@ public class CardRepositoryImpl implements CardRepository, Closeable {
     }
 
     @Override
-    public void update(Integer id, Card t) {
-        entityManager.update(id, t);
+    public Card update(Integer id, Card t) {
+        return entityManager.update(id, t);
     }
 
     @Override

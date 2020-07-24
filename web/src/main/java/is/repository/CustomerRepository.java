@@ -1,6 +1,7 @@
 package is.repository;
 
-import is.db.model.Customer;
+
+import is.domain.Customer;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -8,11 +9,11 @@ import java.util.function.Predicate;
 public interface CustomerRepository {
     Customer findById(Integer id);
 
-    void save(Customer t);
+    Customer save(Customer t);
 
     void delete(Integer id);
 
-    void update(Integer id, Customer t);
+    Customer update(Integer id, Customer t);
 
     List<Customer> find(Predicate<Customer> predicate);
 }

@@ -25,18 +25,21 @@ public class EntityManagerImpl<T extends Serializable, ID> implements EntityMana
     }
 
     @Override
-    public void save(T t) {
+    public T save(T t) {
         Field field = table.getKeys().get(0);
         field.setAccessible(true);
         try {
-            System.out.println(seekByteRW.findLoc((ID) field.get(t), field));
-            if (seekByteRW.findLoc((ID) field.get(t), field) != -1) {
+            ID id = (ID) field.get(t);
+            if (seekByteRW.findLoc(id, field) != -1) {
+                System.out.println("id is exist");
             } else {
                 seekByteRW.save(t);
+                return findById(id);
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
@@ -45,9 +48,9 @@ public class EntityManagerImpl<T extends Serializable, ID> implements EntityMana
     }
 
     @Override
-    public void update(ID id, T t) {
+    public T update(ID id, T t) {
         seekByteRW.delete(seekByteRW.findLoc(id, table.getKeys().get(0)));
-        save(t);
+        return save(t);
     }
 
     @Override

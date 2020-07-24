@@ -1,7 +1,8 @@
 package is.repository;
 
 
-import is.db.model.Account;
+
+import is.domain.Account;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -9,11 +10,11 @@ import java.util.function.Predicate;
 public interface AccountRepository {
     Account findById(Integer id);
 
-    void save(Account t);
+    Account save(Account t);
 
     void delete(Integer id);
 
-    void update(Integer id, Account t);
+    Account update(Integer id, Account t);
 
     List<Account> find(Predicate<Account> predicate);
 

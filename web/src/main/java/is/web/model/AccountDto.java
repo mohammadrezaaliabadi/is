@@ -1,4 +1,4 @@
-package is.db.model;
+package is.web.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import is.db.annotation.ForeignKey;
@@ -15,8 +15,7 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "account")
-public class Account implements Serializable {
+public class AccountDto {
     private int id;
     private String accountNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING)

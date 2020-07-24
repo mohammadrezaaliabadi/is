@@ -1,4 +1,4 @@
-package is.db.model;
+package is.domain;
 
 import is.db.annotation.ForeignKey;
 import lombok.AllArgsConstructor;
@@ -18,6 +18,7 @@ import java.io.Serializable;
 @Entity(name = "card")
 public class Card implements Serializable {
     @Id
+    private int id;
     private String cardNumber;
     private int ccv;
     private String password;

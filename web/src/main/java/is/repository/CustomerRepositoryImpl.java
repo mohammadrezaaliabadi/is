@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import is.db.manager.EntityManager;
 import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
-import is.db.model.Card;
-import is.db.model.Customer;
 import is.db.rw.bytes.SeekByteRW;
+import is.domain.Customer;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -33,12 +32,8 @@ public class CustomerRepositoryImpl implements CustomerRepository, Closeable {
     }
 
     @Override
-    public void save(Customer customer) {
-        try {
-            entityManager.save(customer);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public Customer save(Customer customer) {
+        return entityManager.save(customer);
     }
 
     @Override
@@ -47,19 +42,14 @@ public class CustomerRepositoryImpl implements CustomerRepository, Closeable {
     }
 
     @Override
-    public void update(Integer id, Customer t) {
-        update(id, Customer.builder().build());
+    public Customer update(Integer id, Customer t) {
+        return entityManager.update(id,t);
     }
 
     @Override
     public List<Customer> find(Predicate<Customer> predicate) {
-        //todo impl
-        return null;
+        return find(predicate);
     }
-    public void destroy(){
-        System.out.println("MOhammad");
-    }
-
     @Override
     public void close() throws IOException {
         if (entityManager instanceof EntityManagerImpl){
