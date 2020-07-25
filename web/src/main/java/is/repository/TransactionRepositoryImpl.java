@@ -18,7 +18,7 @@ public class TransactionRepositoryImpl implements TransactionRepository, Closeab
 
     public TransactionRepositoryImpl(Path path, Table table) {
         try {
-            SeekByteRW<Transaction, Integer> seekByteRW = new SeekByteRW(path, Transaction.class, new TypeReference<List<Transaction>>() {
+            SeekByteRW<Transaction, Integer> seekByteRW = new SeekByteRW(path, table,Transaction.class, new TypeReference<List<Transaction>>() {
             });
             this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
         } catch (IOException e) {

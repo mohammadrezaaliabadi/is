@@ -9,6 +9,7 @@ import org.reflections.Reflections;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -58,24 +59,26 @@ public class MetaDB implements Closeable {
         db = DB.builder().name(dBName).tables(tables).build();
     }
 
-    public Map<String, Table> loadTablesInPackage(String prefixPackage) {
+    private Map<String, Table> loadTablesInPackage(String prefixPackage) {
         Reflections reflections = new Reflections(prefixPackage);
-        Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(Entity.class);
+        Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(javax.persistence.Table.class);
         Map<String, Table> tables = new HashMap<>();
         typesAnnotatedWith.forEach(aClass -> {
             try {
                 String nameTable = "";
-                Field[] filds = aClass.getDeclaredFields();
+                Field[] fields = aClass.getDeclaredFields();
                 List<Field> keys = new ArrayList<>();
+                Index[] indices = null;
                 for (Annotation annotation : aClass.getAnnotations()) {
-                    if (annotation instanceof Entity) {
-                        nameTable = ((Entity) annotation).name();
+                    if (annotation instanceof javax.persistence.Table) {
+                        var table =(javax.persistence.Table) annotation;
+                        nameTable = table.name();
+                        indices = table.indexes();
                         break;
                     }
                 }
-                for (Field field : filds) {
+                for (Field field : fields) {
                     if (field.getDeclaredAnnotations().length != 0) {
-                        Key key;
                         for (Annotation annotation : field.getDeclaredAnnotations()) {
                             if (annotation instanceof Id || annotation instanceof ForeignKey) {
                                 keys.add(field);
@@ -85,7 +88,8 @@ public class MetaDB implements Closeable {
                     } else {
                     }
                 }
-                tables.put(nameTable, Table.builder().name(nameTable).keys(keys).fields(filds).build());
+                tables.put(nameTable, Table.builder().name(nameTable).keys(keys).fields(fields).indices(indices).build());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

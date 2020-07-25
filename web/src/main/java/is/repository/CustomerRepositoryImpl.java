@@ -18,7 +18,7 @@ public class CustomerRepositoryImpl implements CustomerRepository, Closeable {
 
     public CustomerRepositoryImpl(Path path, Table table) {
         try {
-            SeekByteRW<Customer, Integer> seekByteRW = new SeekByteRW(path, Customer.class, new TypeReference<List<Customer>>() {
+            SeekByteRW<Customer, Integer> seekByteRW = new SeekByteRW(path, table,Customer.class, new TypeReference<List<Customer>>() {
             });
             this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
         } catch (IOException e) {

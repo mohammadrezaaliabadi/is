@@ -26,20 +26,7 @@ public class EntityManagerImpl<T extends Serializable, ID extends Comparable<? s
 
     @Override
     public T save(T t) {
-        Field field = table.getKeys().get(0);
-        field.setAccessible(true);
-        try {
-            ID id = (ID) field.get(t);
-            if (seekByteRW.findById(id)!=null) {
-                System.out.println("id is exist");
-            } else {
-                seekByteRW.save(t,field);
-                return findById(id);
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return seekByteRW.save(t);
     }
 
     @Override

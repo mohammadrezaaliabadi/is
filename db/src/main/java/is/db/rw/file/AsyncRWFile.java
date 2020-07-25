@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
 import java.util.concurrent.Future;

@@ -18,7 +18,7 @@ public class CardRepositoryImpl implements CardRepository, Closeable {
 
     public CardRepositoryImpl(Path path, Table table) {
         try {
-            SeekByteRW<Card, Integer> seekByteRW = new SeekByteRW(path, Card.class, new TypeReference<List<Card>>() {
+            SeekByteRW<Card, Integer> seekByteRW = new SeekByteRW(path,table, Card.class, new TypeReference<List<Card>>() {
             });
             this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
         } catch (IOException e) {

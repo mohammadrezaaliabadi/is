@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Index;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -18,4 +19,5 @@ public class Table implements Serializable {
     private Field[] fields;
     private List<String> nameBlocks;
     private List<Field> keys;
+    private Index[] indices;
 }

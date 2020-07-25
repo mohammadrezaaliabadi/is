@@ -1,16 +1,13 @@
 package is.web.controller;
 
-import is.domain.Customer;
 import is.service.CustomerService;
 import is.web.model.CustomerDto;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/api/customer")

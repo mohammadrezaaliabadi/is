@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import is.db.datastructure.BPlusTree;
 import is.db.meta.SlottedPageHeader;
+import is.db.meta.Table;
 import lombok.RequiredArgsConstructor;
 
+import javax.persistence.Index;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,9 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -33,10 +33,28 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
     private TypeReference<List<T>> typeReference;
     private boolean firstFlag = false;
     private SeekableByteChannel sbc;
-    private SeekableByteChannel pIndexFile;
-    private BPlusTree<ID,Integer> pIndex;
+    private Table table;
+    private Map<String,BPlusTree> indexes = new HashMap<>();
+    private Map<String,SeekableByteChannel> fileIndexes = new HashMap<>();
 
-    public SeekByteRW(Path path, Class<T> tClass, TypeReference typeReference) throws IOException {
+    public SeekByteRW(Path path,Table table, Class<T> tClass, TypeReference typeReference) throws IOException {
+        this.table = table;
+        this.fileIndexes.put(table.getKeys().get(0).getName(),Files.newByteChannel(path.resolve(table.getKeys().get(0).getName()+".ser"), CREATE, WRITE, READ));
+        for (Index index:table.getIndices()) {
+            fileIndexes.put(index.name(),Files.newByteChannel(path.resolve(index.name()+".ser"), CREATE, WRITE, READ));
+        }
+        fileIndexes.forEach((s, fileIndex) -> {
+            try {
+                System.out.println(s);
+                indexes.put(s,new BPlusTree(10));
+                if (fileIndex.size()==0){
+                }else {
+                    readIndex(s,fileIndex,indexes.get(s));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         this.typeReference = typeReference;
         this.tClass = tClass;
         this.path = path;
@@ -44,39 +62,30 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         this.COMMA = ",".getBytes();
         this.sbc = Files.newByteChannel(path.resolve("data.json"), CREATE, WRITE, READ);
         this.header = Files.newByteChannel(path.resolve("header.json"), CREATE, WRITE, READ);
-        this.pIndexFile = Files.newByteChannel(path.resolve("index.ser"), CREATE, WRITE, READ);
         if (sbc.size() ==0) {
             this.firstFlag = true;
-        }
-        if (pIndexFile.size() != 0){
-            readIndex();
-        }else {
-            this.pIndex = new BPlusTree<>(10);
         }
         if (header.size() != 0) {
             readHeader();
         } else {
             this.sph = SlottedPageHeader.builder().sizes(new ArrayList<Integer>()).locations(new ArrayList<Long>()).build();
-            writeHeader();
         }
     }
-
-    public void readIndex() throws IOException {
-        ByteBuffer allocate = ByteBuffer.allocate((int) pIndexFile.size());
-        pIndexFile.read(allocate);
+    public void writeIndex(String name,SeekableByteChannel fileIndex,BPlusTree index) throws IOException{
+        if (Files.exists(path.resolve(name + ".ser"))) {
+            Files.delete(path.resolve(name + ".ser"));
+        }
+        fileIndex = Files.newByteChannel(path.resolve(name + ".ser"), CREATE, WRITE, READ);
+        fileIndex.write(ByteBuffer.wrap(mapperJava.serialize(index)));
+    }
+    public void readIndex(String name,SeekableByteChannel fileIndex,BPlusTree index) throws IOException{
+        ByteBuffer allocate = ByteBuffer.allocate((int) fileIndex.size());
+        fileIndex.read(allocate);
         try {
-            pIndex = (BPlusTree<ID, Integer>) mapperJava.deserialize(allocate.array());
+            index = (BPlusTree<ID, Integer>) mapperJava.deserialize(allocate.array());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    public void writeIndex() throws IOException{
-        if (Files.exists(path.resolve("index.ser"))) {
-            Files.delete(path.resolve("index.ser"));
-        }
-        this.pIndexFile = Files.newByteChannel(path.resolve("index.ser"), CREATE, WRITE, READ);
-        pIndexFile.write(ByteBuffer.wrap(mapperJava.serialize(pIndex)));
     }
 
     public void writeHeader() throws IOException {
@@ -92,21 +101,27 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         header.read(allocate);
         sph = mapper.readValue(allocate.array(), SlottedPageHeader.class);
     }
-
-    public void save(T t,Field field) {
+    public T save(T t) {
         try {
+            Field field = table.getKeys().get(0);
+            field.setAccessible(true);
+            ID id = (ID) field.get(t);
+            if (findById(id)!=null){
+                return null;
+            }
             byte[] bytes = mapper.writeValueAsBytes(t);
             sph.getSizes().add(bytes.length);
             if (firstFlag) {
                 sph.getLocations().add(2l);
-                firstFlag = false;
                 ByteBuffer wrap = ByteBuffer.allocate(bytes.length + 3);
                 wrap.put("[ ".getBytes());
                 wrap.put(bytes);
                 wrap.put(END_FILE);
                 wrap.compact();
                 sbc.write(wrap);
+                firstFlag = false;
             } else {
+
                 sbc.position(sbc.size() - 1);
                 sph.getLocations().add(sbc.position() + 1);
                 ByteBuffer wrap = ByteBuffer.allocate(bytes.length + 2);
@@ -116,13 +131,61 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
                 wrap.compact();
                 sbc.write(wrap);
             }
-            ID id = (ID) field.get(t);
-            pIndex.insert(id,sph.getSizes().size()-1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+            int loc = sph.getSizes().size()-1;
+            insertToIndexes(t,loc);
+            return findById(id);
+        } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    private void insertToIndexes(T t,int loc){
+        indexes.forEach((s, bPlusTree) -> {
+            for (Field f:table.getFields()){
+                f.setAccessible(true);
+                if (s.equals(f.getName())){
+                    try {
+                        Object o = f.get(t);
+                        if (o instanceof Integer){
+                            bPlusTree.insert((int)o,loc);
+                        }else if (o instanceof Long){
+                            bPlusTree.insert((long)o,loc);
+                        }else if (o instanceof Double){
+                            bPlusTree.insert((double)o,loc);
+                        } else if (o instanceof String){
+                            bPlusTree.insert((String)o,loc);
+                        }
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void removeToIndexes(T t){
+        indexes.forEach((s, bPlusTree) -> {
+            for (Field f:table.getFields()){
+                if (s.equals(f.getName())){
+                    try {
+                        Object o = f.get(t);
+                        if (o instanceof Integer){
+                            bPlusTree.delete((int)o);
+                        }else if (o instanceof Long){
+                            bPlusTree.delete((long)o);
+                        }else if (o instanceof Double){
+                            bPlusTree.delete((double)o);
+                        }
+                        else if (o instanceof String){
+                            bPlusTree.delete((String)o);
+                        }
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     public List<T> findTempAll() {
@@ -154,28 +217,14 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
     @Override
     public void close() throws IOException {
         writeHeader();
-        writeIndex();
-    }
+        fileIndexes.forEach((s, seekableByteChannel) -> {
+            try {
+                writeIndex(s,seekableByteChannel,indexes.get(s));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-    public int findLoc(ID id, Field field) {
-        return pIndex.search(id);
-//        try {
-//            for (int i = 0; i < sph.getSizes().size(); i++) {
-//                ByteBuffer byteBuffer = ByteBuffer.allocate(sph.getSizes().get(i));
-//                sbc.position(sph.getLocations().get(i));
-//                sbc.read(byteBuffer);
-//                T t = mapper.readValue(byteBuffer.array(), tClass);
-//                field.setAccessible(true);
-//                if (field.get(t).equals(id)) {
-//                    return i;
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//        return -1;
     }
 
     public T find(int loc) {
@@ -191,12 +240,12 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
     }
 
     public T findById(ID id){
-        Integer search = pIndex.search(id);
-        return search!=null? find(search):null;
+        Integer loc = (Integer) indexes.get(table.getKeys().get(0).getName()).search(id);
+        return loc!=null? find(loc):null;
     }
     public void delete(ID id){
-        Integer loc = pIndex.search(id);
-        pIndex.delete(id);
+        Integer loc = (Integer) indexes.get(table.getKeys().get(0).getName()).search(id);
+        removeToIndexes(find(loc));
         sph.getLocations().remove(loc);
         sph.getSizes().remove(loc);
     }

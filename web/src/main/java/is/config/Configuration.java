@@ -3,10 +3,6 @@ package is.config;
 import is.db.meta.MetaDB;
 import is.repository.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.ContextStartedEvent;
-import org.springframework.context.event.ContextStoppedEvent;
-import org.springframework.context.event.EventListener;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -44,9 +40,5 @@ public class Configuration {
         return new CardRepositoryImpl(path.resolve("bank/card"), metaDB.getDb().getTables().get("card"));
     }
 
-//    @EventListener(classes = {ContextClosedEvent.class, ContextStoppedEvent.class })
-//    public void handleCloseAndStopContextEvents() {
-//        System.out.println("Multi-event listener invoked");
-//    }
 
 }

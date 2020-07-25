@@ -19,7 +19,7 @@ public class AccountRepositoryImpl implements AccountRepository ,Closeable{
 
     public AccountRepositoryImpl(Path path, Table table) {
         try {
-            SeekByteRW<Account, Integer> seekByteRW = new SeekByteRW(path, Account.class, new TypeReference<List<Account>>() {
+            SeekByteRW<Account, Integer> seekByteRW = new SeekByteRW(path,table, Account.class, new TypeReference<List<Account>>() {
             });
             this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
         } catch (IOException e) {
