@@ -1,5 +1,6 @@
 package is.service;
 
+import is.domain.Account;
 import is.domain.Customer;
 import is.repository.AccountRepository;
 import is.repository.CustomerRepository;
@@ -46,5 +47,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDto> findAll() {
         return repository.findAll().stream().map(mapper::accountToAccountDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public AccountDto findByAccountNumber(String accountNumber) {
+        return mapper.accountToAccountDto(repository.findByAccountNumber(accountNumber));
     }
 }

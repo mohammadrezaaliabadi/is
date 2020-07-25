@@ -4,6 +4,7 @@ import is.domain.Account;
 import is.service.AccountService;
 import is.service.CustomerService;
 import is.web.model.AccountDto;
+import is.web.model.CardDto;
 import is.web.model.CustomerDto;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/account")
@@ -20,6 +23,16 @@ public class AccountController {
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountDto> get(@PathVariable("accountId")int accountId){
         return new ResponseEntity<>(service.findById(accountId), HttpStatus.OK);
+    }
+
+    @GetMapping(path = {"/",""})
+    public ResponseEntity<List<CardDto>> getAll(){
+        return new ResponseEntity(service.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{accountNumber}/accountNumber")
+    public ResponseEntity<AccountDto> get(@PathVariable("accountNumber")String accountNumber){
+        return new ResponseEntity<>(service.findByAccountNumber(accountNumber), HttpStatus.OK);
     }
     @PostMapping
     public ResponseEntity<AccountDto> post(@RequestBody AccountDto accountDto) throws NotFoundException {

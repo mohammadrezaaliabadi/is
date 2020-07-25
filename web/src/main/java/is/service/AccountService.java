@@ -1,6 +1,7 @@
 package is.service;
 
 
+import is.domain.Account;
 import is.web.model.AccountDto;
 import is.web.model.CustomerDto;
 import javassist.NotFoundException;
@@ -13,4 +14,5 @@ public interface AccountService {
     AccountDto updateAccount(int id,AccountDto accountDto);
     void deleteAccount(int id);
     List<AccountDto> findAll();
+    AccountDto findByAccountNumber(String accountNumber);
 }

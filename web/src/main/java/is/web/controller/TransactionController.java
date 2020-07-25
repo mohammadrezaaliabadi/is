@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/api/transaction")
 public class TransactionController {
@@ -18,6 +20,10 @@ public class TransactionController {
     @GetMapping("/{transactionId}")
     public ResponseEntity<TransactionDto> get(@PathVariable("transactionId")int transactionId){
         return new ResponseEntity<>(service.findById(transactionId), HttpStatus.OK);
+    }
+    @GetMapping(path = {"/",""})
+    public ResponseEntity<List<TransactionDto>> getAll(){
+        return new ResponseEntity(service.findAll(), HttpStatus.OK);
     }
     @PostMapping
     public ResponseEntity<TransactionDto> post(@RequestBody TransactionDto transactionDto){

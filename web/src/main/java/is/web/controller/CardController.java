@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/api/card")
 public class CardController {
@@ -19,6 +21,15 @@ public class CardController {
     @GetMapping("/{cardId}")
     public ResponseEntity<CardDto> get(@PathVariable("cardId")int cardId){
         return new ResponseEntity<>(service.findById(cardId), HttpStatus.OK);
+    }
+    @GetMapping(path = {"","/"})
+    public ResponseEntity<List<CardDto>> getAll(){
+        return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{cardNumber}/cardNumber")
+    public ResponseEntity<CardDto> get(@PathVariable("accountNumber")String cardNumber){
+        return new ResponseEntity<>(service.findCardNumber(cardNumber), HttpStatus.OK);
     }
     @PostMapping
     public ResponseEntity<CardDto> post(@RequestBody CardDto cardDto){

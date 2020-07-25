@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/api/customer")
@@ -17,6 +19,23 @@ public class CustomerController {
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerDto> getCustomer(@PathVariable("customerId")int customerId){
         return new ResponseEntity<>(customerService.findById(customerId), HttpStatus.OK);
+    }
+
+    @GetMapping(path = {"","/"})
+    public ResponseEntity<List<CustomerDto>> getCustomer(){
+        return new ResponseEntity<>(customerService.findAll(), HttpStatus.OK);
+    }
+    @GetMapping("/{firstName}/firstName")
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable("firstName")String firstName){
+        return new ResponseEntity<>(customerService.findByFirstName(firstName), HttpStatus.OK);
+    }
+    @GetMapping("/{lastName}/lastName")
+    public ResponseEntity<CustomerDto> getCustomer2(@PathVariable("firstName")String lastName){
+        return new ResponseEntity<>(customerService.findByFirstName(lastName), HttpStatus.OK);
+    }
+    @GetMapping("/{nationalNumber}/nationalNumber")
+    public ResponseEntity<CustomerDto> getCustomer3(@PathVariable("nationalNumber")String nationalNumber){
+        return new ResponseEntity<>(customerService.findByNationalNumber(nationalNumber), HttpStatus.OK);
     }
     @PostMapping
     public ResponseEntity<CustomerDto> postCustomer(@RequestBody CustomerDto customerDto){

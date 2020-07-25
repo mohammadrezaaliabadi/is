@@ -1,5 +1,6 @@
 package is.service;
 
+import is.domain.Card;
 import is.web.model.AccountDto;
 import is.web.model.CardDto;
 
@@ -11,4 +12,5 @@ public interface CardService {
     CardDto updateCard(int id,CardDto cardDto);
     void deleteCard(int id);
     List<CardDto> findAll();
+    CardDto findCardNumber(String cardNumber);
 }

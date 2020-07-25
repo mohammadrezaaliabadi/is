@@ -45,7 +45,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerDto> findByLastName(String lastName) {
-        return null;
+    public CustomerDto findByFirstName(String firstName) {
+        return mapper.customerToCustomerDto(repository.findByFirstName(firstName));
     }
+
+    @Override
+    public CustomerDto findByLastName(String lastName) {
+        return mapper.customerToCustomerDto(repository.findByLastName(lastName));
+
+    }
+
+    @Override
+    public CustomerDto findByNationalNumber(String nationalNumber) {
+        return mapper.customerToCustomerDto(repository.findByNationalNumber(nationalNumber));
+    }
+
 }

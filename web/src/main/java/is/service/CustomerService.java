@@ -14,5 +14,7 @@ public interface CustomerService {
     CustomerDto updateCustomer(int id,CustomerDto customerDto);
     void deleteCustomer(int id);
     List<CustomerDto> findAll();
-    List<CustomerDto> findByLastName(String lastName);
+    CustomerDto findByFirstName(String firstName);
+    CustomerDto findByLastName(String lastName);
+    CustomerDto findByNationalNumber(String nationalNumber);
 }

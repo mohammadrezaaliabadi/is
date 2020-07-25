@@ -1,5 +1,6 @@
 package is.service;
 
+import is.domain.Card;
 import is.repository.CardRepository;
 import is.web.mapper.CardMapper;
 import is.web.model.CardDto;
@@ -38,5 +39,10 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<CardDto> findAll() {
         return repository.findAll().stream().map(mapper::cardToCardDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public CardDto findCardNumber(String cardNumber) {
+        return mapper.cardToCardDto(repository.findCardNumber(cardNumber));
     }
 }
