@@ -19,5 +19,5 @@ public interface AccountRepository {
     List<Account> find(Predicate<Account> predicate);
     List<Account> findAll();
 
-
+    Account findByAccountNumber(String accountNumber);
 }

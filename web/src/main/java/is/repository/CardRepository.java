@@ -17,4 +17,5 @@ public interface CardRepository {
 
     List<Card> find(Predicate<Card> predicate);
     List<Card> findAll();
+    Card findCardNumber(String cardNumber);
 }

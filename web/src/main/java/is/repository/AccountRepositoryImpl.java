@@ -57,6 +57,10 @@ public class AccountRepositoryImpl implements AccountRepository ,Closeable{
         return entityManager.findAll();
     }
 
+    @Override
+    public Account findByAccountNumber(String accountNumber) {
+        return entityManager.findByIndex(accountNumber,"accountNumber");
+    }
 
 
     @Override

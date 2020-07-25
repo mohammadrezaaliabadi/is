@@ -57,6 +57,11 @@ public class CardRepositoryImpl implements CardRepository, Closeable {
     }
 
     @Override
+    public Card findCardNumber(String cardNumber) {
+        return entityManager.findByIndex(cardNumber,"cardNumber");
+    }
+
+    @Override
     public void close() throws IOException {
         if (entityManager instanceof EntityManagerImpl){
             ((EntityManagerImpl<Card, Integer>) entityManager).close();
