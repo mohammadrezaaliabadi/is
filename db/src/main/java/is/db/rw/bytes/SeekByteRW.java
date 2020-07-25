@@ -251,14 +251,12 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         else if (o instanceof String){
             loc = (Integer) indexes.get(indexName).search((String) o);
         }
-        System.out.println(indexes.get(indexName));
         return loc!=null? find(loc):null;
     }
 
 
     public T findById(ID id){
         Integer loc = (Integer) indexes.get(table.getKeys().get(0).getName()).search(id);
-        System.out.println(indexes.get(table.getKeys().get(0).getName()));
         return loc!=null? find(loc):null;
     }
     public void delete(ID id){
