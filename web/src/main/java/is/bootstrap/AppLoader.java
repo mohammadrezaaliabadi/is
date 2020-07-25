@@ -31,6 +31,5 @@ public class AppLoader implements CommandLineRunner {
     }
 
     public void initCustomer() {
-
     }
 }

@@ -48,8 +48,13 @@ public class TransactionRepositoryImpl implements TransactionRepository, Closeab
 
     @Override
     public List<Transaction> find(Predicate<Transaction> predicate) {
-        return null;
+        return find(predicate);
 
+    }
+
+    @Override
+    public List<Transaction> findAll() {
+        return entityManager.findAll();
     }
 
     @Override

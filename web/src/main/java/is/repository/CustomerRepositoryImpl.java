@@ -5,6 +5,7 @@ import is.db.manager.EntityManager;
 import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
 import is.db.rw.bytes.SeekByteRW;
+import is.domain.Account;
 import is.domain.Customer;
 
 import java.io.Closeable;
@@ -50,6 +51,28 @@ public class CustomerRepositoryImpl implements CustomerRepository, Closeable {
     public List<Customer> find(Predicate<Customer> predicate) {
         return find(predicate);
     }
+
+    @Override
+    public List<Customer> findAll() {
+        return entityManager.findAll();
+    }
+
+    @Override
+    public Customer findByFirstName(String firstName) {
+        return entityManager.findByIndex(firstName,"firstName");
+    }
+
+    @Override
+    public Customer findByLastName(String lastName) {
+        return entityManager.findByIndex(lastName,"lastName");
+
+    }
+
+    @Override
+    public Customer findByNationalNumber(String nationalNumber) {
+        return entityManager.findByIndex(nationalNumber,"nationalNumber");
+    }
+
     @Override
     public void close() throws IOException {
         if (entityManager instanceof EntityManagerImpl){

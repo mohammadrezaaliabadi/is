@@ -5,6 +5,7 @@ import is.service.AccountService;
 import is.service.CustomerService;
 import is.web.model.AccountDto;
 import is.web.model.CustomerDto;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class AccountController {
         return new ResponseEntity<>(service.findById(accountId), HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<AccountDto> post(@RequestBody AccountDto accountDto){
+    public ResponseEntity<AccountDto> post(@RequestBody AccountDto accountDto) throws NotFoundException {
         return new ResponseEntity<>(service.saveAccount(accountDto),HttpStatus.CREATED);
     }
     @PutMapping("/{accountId}")

@@ -1,10 +1,12 @@
 package is.service;
 
+import is.domain.Customer;
 import is.repository.AccountRepository;
 import is.repository.CustomerRepository;
 import is.web.mapper.AccountMapper;
 import is.web.mapper.CustomerMapper;
 import is.web.model.AccountDto;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,15 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepository repository;
     @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
     private AccountMapper mapper;
     @Override
-    public AccountDto saveAccount(AccountDto accountDto) {
+    public AccountDto saveAccount(AccountDto accountDto) throws NotFoundException {
+        Customer byId = customerRepository.findById(accountDto.getCustomerId());
+        if (byId==null){
+            throw new NotFoundException("Customer Not Found for FK");
+        }
         return mapper.accountToAccountDto(repository.save(mapper.accountDtoToAccount(accountDto)));
     }
 
@@ -37,6 +45,6 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public List<AccountDto> findAll() {
-        return repository.find(account -> true).stream().map(mapper::accountToAccountDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::accountToAccountDto).collect(Collectors.toList());
     }
 }

@@ -16,4 +16,6 @@ public interface TransactionRepository {
     Transaction update(Integer id, Transaction t);
 
     List<Transaction> find(Predicate<Transaction> predicate);
+
+    List<Transaction> findAll();
 }

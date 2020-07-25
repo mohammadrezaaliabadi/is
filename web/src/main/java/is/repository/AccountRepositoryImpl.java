@@ -52,6 +52,12 @@ public class AccountRepositoryImpl implements AccountRepository ,Closeable{
         return entityManager.find(predicate);
     }
 
+    @Override
+    public List<Account> findAll() {
+        return entityManager.findAll();
+    }
+
+
 
     @Override
     public void close() throws IOException {

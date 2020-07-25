@@ -50,6 +50,12 @@ public class CardRepositoryImpl implements CardRepository, Closeable {
     public List<Card> find(Predicate<Card> predicate) {
         return entityManager.find(predicate);
     }
+
+    @Override
+    public List<Card> findAll() {
+        return entityManager.findAll();
+    }
+
     @Override
     public void close() throws IOException {
         if (entityManager instanceof EntityManagerImpl){

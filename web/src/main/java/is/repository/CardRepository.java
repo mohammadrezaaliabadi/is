@@ -16,4 +16,5 @@ public interface CardRepository {
     Card update(Integer id, Card t);
 
     List<Card> find(Predicate<Card> predicate);
+    List<Card> findAll();
 }

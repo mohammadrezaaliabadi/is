@@ -45,11 +45,10 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         }
         fileIndexes.forEach((s, fileIndex) -> {
             try {
-                System.out.println(s);
-                indexes.put(s,new BPlusTree(10));
                 if (fileIndex.size()==0){
+                    indexes.put(s,new BPlusTree(10));
                 }else {
-                    readIndex(s,fileIndex,indexes.get(s));
+                    indexes.put(s,readIndex(fileIndex));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -78,14 +77,15 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         fileIndex = Files.newByteChannel(path.resolve(name + ".ser"), CREATE, WRITE, READ);
         fileIndex.write(ByteBuffer.wrap(mapperJava.serialize(index)));
     }
-    public void readIndex(String name,SeekableByteChannel fileIndex,BPlusTree index) throws IOException{
+    public BPlusTree<ID, Integer> readIndex(SeekableByteChannel fileIndex) throws IOException{
         ByteBuffer allocate = ByteBuffer.allocate((int) fileIndex.size());
         fileIndex.read(allocate);
         try {
-            index = (BPlusTree<ID, Integer>) mapperJava.deserialize(allocate.array());
+            return (BPlusTree<ID, Integer>) mapperJava.deserialize(allocate.array());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void writeHeader() throws IOException {
@@ -239,8 +239,26 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         return null;
     }
 
+    public T findByIndex(Object o,String indexName){
+        Integer loc = null;
+        if (o instanceof Integer){
+            loc = (Integer) indexes.get(indexName).search((Integer) o);
+        }else if (o instanceof Long){
+            loc = (Integer) indexes.get(indexName).search((Long) o);
+        }else if (o instanceof Double){
+            loc = (Integer) indexes.get(indexName).search((Double) o);
+        }
+        else if (o instanceof String){
+            loc = (Integer) indexes.get(indexName).search((String) o);
+        }
+        System.out.println(indexes.get(indexName));
+        return loc!=null? find(loc):null;
+    }
+
+
     public T findById(ID id){
         Integer loc = (Integer) indexes.get(table.getKeys().get(0).getName()).search(id);
+        System.out.println(indexes.get(table.getKeys().get(0).getName()));
         return loc!=null? find(loc):null;
     }
     public void delete(ID id){

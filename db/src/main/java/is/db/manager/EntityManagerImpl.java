@@ -46,6 +46,15 @@ public class EntityManagerImpl<T extends Serializable, ID extends Comparable<? s
     }
 
     @Override
+    public List<T> findAll() {
+        return seekByteRW.findAll();
+    }
+
+    @Override
+    public T findByIndex(Object o, String indexName) {
+        return seekByteRW.findByIndex(o,indexName);
+    }
+    @Override
     public void close() throws IOException {
         seekByteRW.close();
     }

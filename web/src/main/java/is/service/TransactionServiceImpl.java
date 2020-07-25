@@ -1,9 +1,10 @@
 package is.service;
 
-import is.domain.Transaction;
+import is.repository.AccountRepository;
+import is.repository.CustomerRepository;
 import is.repository.TransactionRepository;
+import is.web.mapper.AccountMapper;
 import is.web.mapper.TransactionMapper;
-import is.web.model.AccountDto;
 import is.web.model.TransactionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionRepository repository;
     @Autowired
     private TransactionMapper mapper;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private AccountMapper accountMapper;
 
 
     @Override
@@ -42,6 +47,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionDto> findAll() {
-        return repository.find(transaction -> true).stream().map(mapper::transactionToTransactionDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::transactionToTransactionDto).collect(Collectors.toList());
     }
 }

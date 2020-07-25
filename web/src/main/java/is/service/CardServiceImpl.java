@@ -37,6 +37,6 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<CardDto> findAll() {
-        return repository.find(card -> true).stream().map(mapper::cardToCardDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::cardToCardDto).collect(Collectors.toList());
     }
 }
