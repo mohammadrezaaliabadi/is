@@ -1,11 +1,13 @@
 package is.service;
 
+import is.domain.Account;
 import is.repository.AccountRepository;
 import is.repository.CustomerRepository;
 import is.repository.TransactionRepository;
 import is.web.mapper.AccountMapper;
 import is.web.mapper.TransactionMapper;
 import is.web.model.TransactionDto;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +22,16 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionMapper mapper;
     @Autowired
     private AccountRepository accountRepository;
-    @Autowired
-    private AccountMapper accountMapper;
 
 
     @Override
-    public TransactionDto saveTransaction(TransactionDto transactionDto) {
+    public TransactionDto saveTransaction(TransactionDto transactionDto) throws NotFoundException {
+        Account byId = accountRepository.findById(transactionDto.getAccountFrom());
+        Account byId2 = accountRepository.findById(transactionDto.getAccountTo());
+        if (byId ==null || byId2==null){
+            throw new NotFoundException("Account not for Fk");
+        }
+
         return mapper.transactionToTransactionDto(repository.save(mapper.transactionDtoToTransaction(transactionDto)));
     }
 

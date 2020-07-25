@@ -1,9 +1,13 @@
 package is.service;
 
+import is.domain.Account;
 import is.domain.Card;
+import is.domain.Customer;
+import is.repository.AccountRepository;
 import is.repository.CardRepository;
 import is.web.mapper.CardMapper;
 import is.web.model.CardDto;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +20,14 @@ public class CardServiceImpl implements CardService {
     private CardRepository repository;
     @Autowired
     private CardMapper mapper;
+    @Autowired
+    private AccountRepository accountRepository;
     @Override
-    public CardDto saveCard(CardDto cardDto) {
+    public CardDto saveCard(CardDto cardDto) throws NotFoundException {
+        Account byId = accountRepository.findById(cardDto.getAccountId());
+        if (byId==null){
+            throw new NotFoundException("Customer Not Found for FK");
+        }
         return mapper.cardToCardDto(repository.save(mapper.cardDtoToCard(cardDto)));
     }
 

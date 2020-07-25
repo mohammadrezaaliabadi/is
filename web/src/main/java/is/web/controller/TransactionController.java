@@ -4,6 +4,7 @@ import is.service.CardService;
 import is.service.TransactionService;
 import is.web.model.CardDto;
 import is.web.model.TransactionDto;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class TransactionController {
         return new ResponseEntity(service.findAll(), HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<TransactionDto> post(@RequestBody TransactionDto transactionDto){
+    public ResponseEntity<TransactionDto> post(@RequestBody TransactionDto transactionDto) throws NotFoundException {
         return new ResponseEntity<>(service.saveTransaction(transactionDto),HttpStatus.CREATED);
     }
     @PutMapping("/{transactionId}")

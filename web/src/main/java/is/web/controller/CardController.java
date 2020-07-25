@@ -5,6 +5,7 @@ import is.service.AccountService;
 import is.service.CardService;
 import is.web.model.AccountDto;
 import is.web.model.CardDto;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class CardController {
         return new ResponseEntity<>(service.findCardNumber(cardNumber), HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<CardDto> post(@RequestBody CardDto cardDto){
+    public ResponseEntity<CardDto> post(@RequestBody CardDto cardDto) throws NotFoundException {
         return new ResponseEntity<>(service.saveCard(cardDto),HttpStatus.CREATED);
     }
     @PutMapping("/{cardId}")
