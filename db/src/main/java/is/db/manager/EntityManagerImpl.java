@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor
-public class EntityManagerImpl<T extends Serializable, ID> implements EntityManager<T, ID>, Closeable {
+public class EntityManagerImpl<T extends Serializable, ID extends Comparable<? super ID>> implements EntityManager<T, ID>, Closeable {
     private SeekByteRW<T, ID> seekByteRW;
     private Table table;
 
     @Override
     public T findById(ID id) {
-        return seekByteRW.find(seekByteRW.findLoc(id, table.getKeys().get(0)));
+        return seekByteRW.findById(id);
     }
 
     @Override
@@ -30,10 +30,10 @@ public class EntityManagerImpl<T extends Serializable, ID> implements EntityMana
         field.setAccessible(true);
         try {
             ID id = (ID) field.get(t);
-            if (seekByteRW.findLoc(id, field) != -1) {
+            if (seekByteRW.findById(id)!=null) {
                 System.out.println("id is exist");
             } else {
-                seekByteRW.save(t);
+                seekByteRW.save(t,field);
                 return findById(id);
             }
         } catch (IllegalAccessException e) {
@@ -44,12 +44,12 @@ public class EntityManagerImpl<T extends Serializable, ID> implements EntityMana
 
     @Override
     public void delete(ID id) {
-        seekByteRW.delete(seekByteRW.findLoc(id, table.getKeys().get(0)));
+        seekByteRW.delete(id);
     }
 
     @Override
     public T update(ID id, T t) {
-        seekByteRW.delete(seekByteRW.findLoc(id, table.getKeys().get(0)));
+        seekByteRW.delete(id);
         return save(t);
     }
 

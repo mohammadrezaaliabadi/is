@@ -2,6 +2,7 @@ package is.db.rw.bytes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import is.db.datastructure.BPlusTree;
 import is.db.meta.SlottedPageHeader;
 import lombok.RequiredArgsConstructor;
 
@@ -20,8 +21,9 @@ import java.util.List;
 import static java.nio.file.StandardOpenOption.*;
 
 @RequiredArgsConstructor
-public class SeekByteRW<T extends Serializable, ID> implements Closeable {
+public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID>> implements Closeable {
     private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapperJava mapperJava = new ObjectMapperJava();
     private Path path;
     private SeekableByteChannel header;
     private SlottedPageHeader sph;
@@ -31,6 +33,8 @@ public class SeekByteRW<T extends Serializable, ID> implements Closeable {
     private TypeReference<List<T>> typeReference;
     private boolean firstFlag = false;
     private SeekableByteChannel sbc;
+    private SeekableByteChannel pIndexFile;
+    private BPlusTree<ID,Integer> pIndex;
 
     public SeekByteRW(Path path, Class<T> tClass, TypeReference typeReference) throws IOException {
         this.typeReference = typeReference;
@@ -38,17 +42,41 @@ public class SeekByteRW<T extends Serializable, ID> implements Closeable {
         this.path = path;
         this.END_FILE = "]".getBytes();
         this.COMMA = ",".getBytes();
-        if (!Files.exists(path.resolve("data.json"))) {
-            this.firstFlag = true;
-        }
         this.sbc = Files.newByteChannel(path.resolve("data.json"), CREATE, WRITE, READ);
         this.header = Files.newByteChannel(path.resolve("header.json"), CREATE, WRITE, READ);
+        this.pIndexFile = Files.newByteChannel(path.resolve("index.ser"), CREATE, WRITE, READ);
+        if (sbc.size() ==0) {
+            this.firstFlag = true;
+        }
+        if (pIndexFile.size() != 0){
+            readIndex();
+        }else {
+            this.pIndex = new BPlusTree<>(10);
+        }
         if (header.size() != 0) {
             readHeader();
         } else {
             this.sph = SlottedPageHeader.builder().sizes(new ArrayList<Integer>()).locations(new ArrayList<Long>()).build();
             writeHeader();
         }
+    }
+
+    public void readIndex() throws IOException {
+        ByteBuffer allocate = ByteBuffer.allocate((int) pIndexFile.size());
+        pIndexFile.read(allocate);
+        try {
+            pIndex = (BPlusTree<ID, Integer>) mapperJava.deserialize(allocate.array());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void writeIndex() throws IOException{
+        if (Files.exists(path.resolve("index.ser"))) {
+            Files.delete(path.resolve("index.ser"));
+        }
+        this.pIndexFile = Files.newByteChannel(path.resolve("index.ser"), CREATE, WRITE, READ);
+        pIndexFile.write(ByteBuffer.wrap(mapperJava.serialize(pIndex)));
     }
 
     public void writeHeader() throws IOException {
@@ -65,7 +93,7 @@ public class SeekByteRW<T extends Serializable, ID> implements Closeable {
         sph = mapper.readValue(allocate.array(), SlottedPageHeader.class);
     }
 
-    public void save(T t) {
+    public void save(T t,Field field) {
         try {
             byte[] bytes = mapper.writeValueAsBytes(t);
             sph.getSizes().add(bytes.length);
@@ -88,8 +116,11 @@ public class SeekByteRW<T extends Serializable, ID> implements Closeable {
                 wrap.compact();
                 sbc.write(wrap);
             }
-
+            ID id = (ID) field.get(t);
+            pIndex.insert(id,sph.getSizes().size()-1);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -123,27 +154,28 @@ public class SeekByteRW<T extends Serializable, ID> implements Closeable {
     @Override
     public void close() throws IOException {
         writeHeader();
+        writeIndex();
     }
 
     public int findLoc(ID id, Field field) {
-        try {
-            for (int i = 0; i < sph.getSizes().size(); i++) {
-                ByteBuffer byteBuffer = ByteBuffer.allocate(sph.getSizes().get(i));
-                sbc.position(sph.getLocations().get(i));
-                sbc.read(byteBuffer);
-                T t = mapper.readValue(byteBuffer.array(), tClass);
-                field.setAccessible(true);
-                if (field.get(t).equals(id)) {
-                    return i;
-                }
-                ;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return -1;
+        return pIndex.search(id);
+//        try {
+//            for (int i = 0; i < sph.getSizes().size(); i++) {
+//                ByteBuffer byteBuffer = ByteBuffer.allocate(sph.getSizes().get(i));
+//                sbc.position(sph.getLocations().get(i));
+//                sbc.read(byteBuffer);
+//                T t = mapper.readValue(byteBuffer.array(), tClass);
+//                field.setAccessible(true);
+//                if (field.get(t).equals(id)) {
+//                    return i;
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//        return -1;
     }
 
     public T find(int loc) {
@@ -158,13 +190,19 @@ public class SeekByteRW<T extends Serializable, ID> implements Closeable {
         return null;
     }
 
-    public void delete(int loc) {
+    public T findById(ID id){
+        Integer search = pIndex.search(id);
+        return search!=null? find(search):null;
+    }
+    public void delete(ID id){
+        Integer loc = pIndex.search(id);
+        pIndex.delete(id);
         sph.getLocations().remove(loc);
         sph.getSizes().remove(loc);
     }
 
-
     public void wrap() {
         //todo impl
+
     }
 }
