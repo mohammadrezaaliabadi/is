@@ -6,6 +6,8 @@ import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
 import is.db.rw.bytes.SeekByteRW;
 import is.domain.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -13,18 +15,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
 
+@Repository
 public class TransactionRepositoryImpl implements TransactionRepository, Closeable {
+    @Autowired
     private EntityManager<Transaction, Integer> entityManager;
-
-    public TransactionRepositoryImpl(Path path, Table table) {
-        try {
-            SeekByteRW<Transaction, Integer> seekByteRW = new SeekByteRW(path, table,Transaction.class, new TypeReference<List<Transaction>>() {
-            });
-            this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public Transaction findById(Integer id) {

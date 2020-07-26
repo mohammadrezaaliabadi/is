@@ -6,25 +6,18 @@ import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
 import is.db.rw.bytes.SeekByteRW;
 import is.domain.Card;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
-
+@Repository
 public class CardRepositoryImpl implements CardRepository, Closeable {
+    @Autowired
     private EntityManager<Card, Integer> entityManager;
-
-    public CardRepositoryImpl(Path path, Table table) {
-        try {
-            SeekByteRW<Card, Integer> seekByteRW = new SeekByteRW(path,table, Card.class, new TypeReference<List<Card>>() {
-            });
-            this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public Card findById(Integer id) {

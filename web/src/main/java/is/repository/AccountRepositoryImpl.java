@@ -7,25 +7,18 @@ import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
 import is.db.rw.bytes.SeekByteRW;
 import is.domain.Account;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
-
+@Repository
 public class AccountRepositoryImpl implements AccountRepository ,Closeable{
+    @Autowired
     private EntityManager<Account, Integer> entityManager;
-
-    public AccountRepositoryImpl(Path path, Table table) {
-        try {
-            SeekByteRW<Account, Integer> seekByteRW = new SeekByteRW(path,table, Account.class, new TypeReference<List<Account>>() {
-            });
-            this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public Account findById(Integer id) {

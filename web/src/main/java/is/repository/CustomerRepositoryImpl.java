@@ -5,28 +5,21 @@ import is.db.manager.EntityManager;
 import is.db.manager.EntityManagerImpl;
 import is.db.meta.Table;
 import is.db.rw.bytes.SeekByteRW;
-import is.domain.Account;
 import is.domain.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
-
+@Repository
 public class CustomerRepositoryImpl implements CustomerRepository, Closeable {
+    @Autowired
     private EntityManager<Customer, Integer> entityManager;
-
-    public CustomerRepositoryImpl(Path path, Table table) {
-        try {
-            SeekByteRW<Customer, Integer> seekByteRW = new SeekByteRW(path, table,Customer.class, new TypeReference<List<Customer>>() {
-            });
-            this.entityManager = new EntityManagerImpl<>(seekByteRW, table);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public Customer findById(Integer id) {
         return entityManager.findById(id);

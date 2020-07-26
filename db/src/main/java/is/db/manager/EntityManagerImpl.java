@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class EntityManagerImpl<T extends Serializable, ID extends Comparable<? super ID>> implements EntityManager<T, ID>, Closeable {
     private SeekByteRW<T, ID> seekByteRW;
-    private Table table;
-
     @Override
     public T findById(ID id) {
         return seekByteRW.findById(id);
