@@ -13,4 +13,6 @@ public interface TransactionService {
     TransactionDto updateTransaction(int id,TransactionDto transactionDto);
     void deleteTransaction(int id);
     List<TransactionDto> findAll();
+    List fromAccountTransaction() throws NoSuchFieldException, IllegalAccessException;
+    List toAccountTransaction() throws NoSuchFieldException, IllegalAccessException;
 }

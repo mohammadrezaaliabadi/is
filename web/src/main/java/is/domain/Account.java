@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name ="account",indexes = {@Index(name = "accountNumber",columnList = "accountNumber")})
-public class Account implements Serializable {
+public class Account implements Serializable,Comparable<Account> {
     @Id
     private int id;
     private String accountNumber;
@@ -26,4 +26,10 @@ public class Account implements Serializable {
     private BigDecimal balance;
     @ForeignKey(name = "customerId", tableName = "customer")
     private int customerId;
+
+
+    @Override
+    public int compareTo(Account o) {
+        return Integer.compare(id,o.id);
+    }
 }

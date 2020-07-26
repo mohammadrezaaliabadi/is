@@ -47,9 +47,10 @@ public class TransactionRepositoryImpl implements TransactionRepository, Closeab
     }
 
     @Override
-    public List<Transaction> findAll() {
-        return entityManager.findAllList();
+    public Transaction[] findAll() {
+        return entityManager.findAll();
     }
+
 
     @Override
     public void close() throws IOException {

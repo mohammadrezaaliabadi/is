@@ -1,13 +1,11 @@
 package is.db.datastructure;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class Join<A,B> {
-    public List nestedLoopJoin(A[] arrA, Field fieldA, B[] arrB,Field fieldB) throws IllegalAccessException {
+public  class Join {
+    public static <A,B> List nestedLoopJoin(A[] arrA, Field fieldA, B[] arrB, Field fieldB) throws IllegalAccessException {
         List list = new LinkedList();
         List cList = new LinkedList();
         List temp = new LinkedList();

@@ -1,5 +1,6 @@
 package is.service;
 
+import is.db.datastructure.MergeSort;
 import is.domain.Account;
 import is.domain.Customer;
 import is.repository.AccountRepository;
@@ -46,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public List<AccountDto> findAll() {
-        return repository.findAll().stream().map(mapper::accountToAccountDto).collect(Collectors.toList());
+        return new MergeSort<Account>(repository.findAll()).getSortListItem().stream().map(mapper::accountToAccountDto).collect(Collectors.toList());
     }
 
     @Override

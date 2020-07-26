@@ -17,5 +17,5 @@ public interface TransactionRepository {
 
     List<Transaction> find(Predicate<Transaction> predicate);
 
-    List<Transaction> findAll();
+    Transaction[] findAll();
 }

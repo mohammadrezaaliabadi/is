@@ -26,6 +26,14 @@ public class TransactionController {
     public ResponseEntity<List<TransactionDto>> getAll(){
         return new ResponseEntity(service.findAll(), HttpStatus.OK);
     }
+    @GetMapping("/accountFrom")
+    public ResponseEntity<List> getAccountFrom() throws NoSuchFieldException, IllegalAccessException {
+        return new ResponseEntity(service.fromAccountTransaction(), HttpStatus.OK);
+    }
+    @GetMapping("/accountTo")
+    public ResponseEntity<List> getAccountTo() throws NoSuchFieldException, IllegalAccessException {
+        return new ResponseEntity(service.toAccountTransaction(), HttpStatus.OK);
+    }
     @PostMapping
     public ResponseEntity<TransactionDto> post(@RequestBody TransactionDto transactionDto) throws NotFoundException {
         return new ResponseEntity<>(service.saveTransaction(transactionDto),HttpStatus.CREATED);

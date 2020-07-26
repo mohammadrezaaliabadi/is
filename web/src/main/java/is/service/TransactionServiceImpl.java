@@ -1,6 +1,8 @@
 package is.service;
 
+import is.db.datastructure.Join;
 import is.domain.Account;
+import is.domain.Transaction;
 import is.repository.AccountRepository;
 import is.repository.CustomerRepository;
 import is.repository.TransactionRepository;
@@ -53,6 +55,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionDto> findAll() {
-        return repository.findAll().stream().map(mapper::transactionToTransactionDto).collect(Collectors.toList());
+        return List.of(repository.findAll()).stream().map(mapper::transactionToTransactionDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List fromAccountTransaction() throws NoSuchFieldException, IllegalAccessException {
+        return Join.nestedLoopJoin(accountRepository.findAll(),Account.class.getDeclaredField("id"),repository.findAll(), Transaction.class.getDeclaredField("accountFrom"));
+    }
+
+    @Override
+    public List toAccountTransaction() throws NoSuchFieldException, IllegalAccessException {
+        return Join.nestedLoopJoin(accountRepository.findAll(),Account.class.getDeclaredField("id"),repository.findAll(), Transaction.class.getDeclaredField("accountTo"));
     }
 }

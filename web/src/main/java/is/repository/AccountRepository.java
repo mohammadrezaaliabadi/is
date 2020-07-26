@@ -17,7 +17,7 @@ public interface AccountRepository {
     Account update(Integer id, Account t);
 
     List<Account> find(Predicate<Account> predicate);
-    List<Account> findAll();
+    Account[] findAll();
 
     Account findByAccountNumber(String accountNumber);
 }
