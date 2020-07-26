@@ -65,6 +65,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List toAccountTransaction() throws NoSuchFieldException, IllegalAccessException {
-        return Join.nestedLoopJoin(accountRepository.findAll(),Account.class.getDeclaredField("id"),repository.findAll(), Transaction.class.getDeclaredField("accountTo"));
+        return Join.<Account,Transaction>nestedLoopJoin(accountRepository.findAll(),Account.class.getDeclaredField("id"),repository.findAll(), Transaction.class.getDeclaredField("accountTo"));
     }
 }

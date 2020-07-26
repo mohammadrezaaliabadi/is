@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JoinTest {
 
-    Join<Account,Transaction> join = new Join<>();
 
     @Test
     void nestedLoopJoin() throws NoSuchFieldException, IllegalAccessException {
@@ -24,7 +23,7 @@ class JoinTest {
         transactions[1] = Transaction.builder().transactionNumber("34").id(2).totalBalance(new BigDecimal("23")).transactionType(2).accountFrom(1).accountTo(2).build();
         transactions[2] = Transaction.builder().transactionNumber("42").id(3).totalBalance(new BigDecimal("412")).transactionType(2).accountFrom(2).accountTo(1).build();
 
-        List list = join.nestedLoopJoin(accounts, Account.class.getDeclaredField("id"), transactions, Transaction.class.getDeclaredField("accountFrom"));
+        List list = Join.<Account,Transaction>nestedLoopJoin(accounts, Account.class.getDeclaredField("id"), transactions, Transaction.class.getDeclaredField("accountFrom"));
         System.out.println(list);
     }
 }
