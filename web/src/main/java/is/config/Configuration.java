@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import is.db.manager.EntityManager;
 import is.db.manager.EntityManagerImpl;
 import is.db.meta.MetaDB;
-import is.db.meta.Table;
 import is.db.rw.bytes.SeekByteRW;
 import is.domain.Account;
 import is.domain.Card;
 import is.domain.Customer;
 import is.domain.Transaction;
-import is.repository.*;
 import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
@@ -57,5 +55,4 @@ public class Configuration {
         });
         return new EntityManagerImpl(seekByteRW);
     }
-
 }
