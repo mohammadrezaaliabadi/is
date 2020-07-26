@@ -54,7 +54,7 @@ public class CustomerRepositoryImpl implements CustomerRepository, Closeable {
 
     @Override
     public List<Customer> findAll() {
-        return entityManager.findAll();
+        return entityManager.findAllList();
     }
 
     @Override

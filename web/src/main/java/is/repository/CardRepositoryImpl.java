@@ -53,7 +53,7 @@ public class CardRepositoryImpl implements CardRepository, Closeable {
 
     @Override
     public List<Card> findAll() {
-        return entityManager.findAll();
+        return entityManager.findAllList();
     }
 
     @Override

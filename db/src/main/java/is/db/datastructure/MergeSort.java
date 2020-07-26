@@ -1,10 +1,17 @@
 package is.db.datastructure;
 
 
+import java.util.List;
+
 public class MergeSort<T extends Comparable>
 {
 
-    private final T[] items, aux;
+    private T[] items, aux;
+
+    public void MergeSort(List<T> items){
+        this.items = (T[])items.toArray();
+        this.aux = (T[]) new Comparable[items.size()];
+    }
 
     public MergeSort(T[] items)
     {
@@ -93,5 +100,9 @@ public class MergeSort<T extends Comparable>
     public T[] getSortedItems()
     {
         return this.items;
+    }
+
+    public List<T> getSortListItem(){
+        return List.of(this.items);
     }
 }

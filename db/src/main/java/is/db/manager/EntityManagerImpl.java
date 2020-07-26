@@ -42,11 +42,15 @@ public class EntityManagerImpl<T extends Serializable, ID extends Comparable<? s
 
     @Override
     public List<T> find(Predicate<T> predicate) {
-        return seekByteRW.findAll().stream().filter(predicate).collect(Collectors.toList());
+        return seekByteRW.findAllList().stream().parallel().filter(predicate).collect(Collectors.toList());
     }
 
     @Override
-    public List<T> findAll() {
+    public List<T> findAllList() {
+        return seekByteRW.findAllList();
+    }
+    @Override
+    public T[] findAll() {
         return seekByteRW.findAll();
     }
 

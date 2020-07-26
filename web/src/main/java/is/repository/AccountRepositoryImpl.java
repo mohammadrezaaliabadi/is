@@ -54,7 +54,7 @@ public class AccountRepositoryImpl implements AccountRepository ,Closeable{
 
     @Override
     public List<Account> findAll() {
-        return entityManager.findAll();
+        return entityManager.findAllList();
     }
 
     @Override

@@ -14,6 +14,7 @@ public interface EntityManager<T extends Serializable, ID> {
     T update(ID id, T t);
 
     List<T> find(Predicate<T> predicate);
-    List<T> findAll();
+    List<T> findAllList();
+    T[] findAll();
     T findByIndex(Object o,String indexName);
 }

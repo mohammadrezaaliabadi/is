@@ -1,6 +1,8 @@
 package is.db.rw.bytes;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import is.db.datastructure.BPlusTree;
 import is.db.meta.SlottedPageHeader;
@@ -11,6 +13,7 @@ import javax.persistence.Index;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
@@ -199,19 +202,24 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         return null;
     }
 
-    public List<T> findAll() {
-        List<T> tList = new LinkedList<>();
+    public List<T> findAllList() {
+        return List.of(this.findAll());
+    }
+
+    public T[] findAll(){
+        @SuppressWarnings("unchecked")
+        T[] arr = (T[]) Array.newInstance(tClass,sph.getSizes().size());
         try {
             for (int i = 0; i < sph.getSizes().size(); i++) {
                 ByteBuffer byteBuffer = ByteBuffer.allocate(sph.getSizes().get(i));
                 sbc.position(sph.getLocations().get(i));
                 sbc.read(byteBuffer);
-                tList.add(mapper.readValue(byteBuffer.array(), tClass));
+                arr[i] = mapper.readValue(byteBuffer.array(), tClass);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return tList;
+        return arr;
     }
 
     @Override
