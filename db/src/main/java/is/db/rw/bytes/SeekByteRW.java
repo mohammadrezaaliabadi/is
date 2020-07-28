@@ -124,7 +124,6 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
                 sbc.write(wrap);
                 firstFlag = false;
             } else {
-
                 sbc.position(sbc.size() - 1);
                 sph.getLocations().add(sbc.position() + 1);
                 ByteBuffer wrap = ByteBuffer.allocate(bytes.length + 2);
@@ -268,10 +267,10 @@ public class SeekByteRW<T extends Serializable, ID extends Comparable<? super ID
         return loc!=null? find(loc):null;
     }
     public void delete(ID id){
-        Integer loc = (Integer) indexes.get(table.getKeys().get(0).getName()).search(id);
+        int loc = (int) indexes.get(table.getKeys().get(0).getName()).search(id);
         removeToIndexes(find(loc));
-        sph.getLocations().remove(loc);
-        sph.getSizes().remove(loc);
+        sph.getLocations().remove((int)loc);
+        sph.getSizes().remove((int)loc);
     }
 
     public void wrap() {

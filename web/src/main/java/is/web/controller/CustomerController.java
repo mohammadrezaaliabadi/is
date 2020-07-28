@@ -31,7 +31,7 @@ public class CustomerController {
     }
     @GetMapping("/{lastName}/lastName")
     public ResponseEntity<CustomerDto> getCustomer2(@PathVariable("firstName")String lastName){
-        return new ResponseEntity<>(customerService.findByFirstName(lastName), HttpStatus.OK);
+        return new ResponseEntity<>(customerService.findByLastName(lastName), HttpStatus.OK);
     }
     @GetMapping("/{nationalNumber}/nationalNumber")
     public ResponseEntity<CustomerDto> getCustomer3(@PathVariable("nationalNumber")String nationalNumber){

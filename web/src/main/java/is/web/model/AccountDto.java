@@ -20,6 +20,5 @@ public class AccountDto {
     private String accountNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal balance;
-    @ForeignKey(name = "customerId", tableName = "customer")
     private int customerId;
 }

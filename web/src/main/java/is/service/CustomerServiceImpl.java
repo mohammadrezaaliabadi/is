@@ -1,7 +1,6 @@
 package is.service;
 
 import is.repository.CustomerRepository;
-import is.domain.Customer;
 import is.web.mapper.CustomerMapper;
 import is.web.model.CustomerDto;
 import lombok.NoArgsConstructor;

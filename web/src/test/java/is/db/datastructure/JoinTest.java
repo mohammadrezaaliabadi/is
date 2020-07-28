@@ -7,10 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class JoinTest {
-
 
     @Test
     void nestedLoopJoin() throws NoSuchFieldException, IllegalAccessException {
@@ -25,5 +23,7 @@ class JoinTest {
 
         List list = Join.<Account,Transaction>nestedLoopJoin(accounts, Account.class.getDeclaredField("id"), transactions, Transaction.class.getDeclaredField("accountFrom"));
         System.out.println(list);
+        List list2 = Join.<Account,Transaction>nestedLoopJoin(accounts, "id", transactions, "accountFrom");
+        System.out.println(list2);
     }
 }

@@ -1,13 +1,15 @@
 package is.db.datastructure;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public  class Join {
     public static <A,B> List nestedLoopJoin(A[] arrA, Field fieldA, B[] arrB, Field fieldB) throws IllegalAccessException {
         List list = new LinkedList();
-        List cList = new LinkedList();
+        Map map = new HashMap<>();
         List temp = new LinkedList();
         fieldA.setAccessible(true);
         fieldB.setAccessible(true);
@@ -18,15 +20,18 @@ public  class Join {
                 }
             }
             if (temp.size()>0){
-                cList.add(a);
-                cList.add(temp);
+                map.put(arrA[0].getClass().getSimpleName(),a);
+                map.put(arrB[0].getClass().getSimpleName(),temp);
                 temp =new LinkedList();
             }
-            if (cList.size()>0){
-                list.add(cList);
-                cList = new LinkedList();
+            if (map.size()>0){
+                list.add(map);
+                map = new HashMap();
             }
         }
         return list;
+    }
+    public static <A,B> List nestedLoopJoin(A[] arrA, String fieldNameA, B[] arrB, String fieldNameB) throws IllegalAccessException, NoSuchFieldException {
+        return nestedLoopJoin(arrA,arrA[0].getClass().getDeclaredField(fieldNameA),arrB,arrB[0].getClass().getDeclaredField(fieldNameB));
     }
 }
