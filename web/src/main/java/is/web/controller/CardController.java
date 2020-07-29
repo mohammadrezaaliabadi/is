@@ -45,6 +45,5 @@ public class CardController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("cardId") int cardId){
         service.deleteCard(cardId);
-        // todo impl
     }
 }

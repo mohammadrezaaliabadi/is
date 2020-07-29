@@ -47,6 +47,5 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("accountId") int accountId){
         service.deleteAccount(accountId);
-        // todo impl
     }
 }

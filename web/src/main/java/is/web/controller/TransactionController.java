@@ -47,6 +47,5 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("transactionId") int transactionId){
         service.deleteTransaction(transactionId);
-        // todo impl
     }
 }
