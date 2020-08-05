@@ -10,5 +10,4 @@ public class DemoApplication {
     public static void main(String[] args) throws IllegalAccessException, IOException {
         SpringApplication.run(DemoApplication.class, args);
     }
-
 }

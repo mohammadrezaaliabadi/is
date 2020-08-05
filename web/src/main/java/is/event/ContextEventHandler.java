@@ -1,5 +1,7 @@
 package is.event;
 
+import is.db.manager.EntityManager;
+import is.domain.Customer;
 import is.repository.*;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;

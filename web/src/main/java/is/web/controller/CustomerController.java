@@ -20,7 +20,6 @@ public class CustomerController {
     public ResponseEntity<CustomerDto> getCustomer(@PathVariable("customerId")int customerId){
         return new ResponseEntity<>(customerService.findById(customerId), HttpStatus.OK);
     }
-
     @GetMapping(path = {"","/"})
     public ResponseEntity<List<CustomerDto>> getCustomer(){
         return new ResponseEntity<>(customerService.findAll(), HttpStatus.OK);
@@ -30,7 +29,7 @@ public class CustomerController {
         return new ResponseEntity<>(customerService.findByFirstName(firstName), HttpStatus.OK);
     }
     @GetMapping("/{lastName}/lastName")
-    public ResponseEntity<CustomerDto> getCustomer2(@PathVariable("firstName")String lastName){
+    public ResponseEntity<CustomerDto> getCustomer2(@PathVariable("lastName")String lastName){
         return new ResponseEntity<>(customerService.findByLastName(lastName), HttpStatus.OK);
     }
     @GetMapping("/{nationalNumber}/nationalNumber")
